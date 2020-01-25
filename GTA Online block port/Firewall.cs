@@ -19,7 +19,7 @@ namespace GTA_Online_block_port
             string rule_name = "GTAO block port";
             int protocol = 17;
             string port = "6672";
-
+            
             var rule = firewallPolicy.Rules.OfType<INetFwRule>().Where(n => n.Name == rule_name).FirstOrDefault();
 
             if (rule == null)
@@ -47,6 +47,7 @@ namespace GTA_Online_block_port
             Console.WriteLine("Press any key to " + not_fwStatus + " . . .");
             Console.ReadKey();
             rule.Enabled = !rule.Enabled;
+            rule = null;
             return true;
         }
 
