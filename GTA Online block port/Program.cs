@@ -13,12 +13,13 @@ namespace GTA_Online_block_port
         static void Main(string[] args)
         {
             bool showMenu = true;
-
-            Console.Title = Firewall.rule_name;
-            
+            Console.Title = "GTAO block port";
             while (showMenu)
             {
                 Console.Clear();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
                 showMenu = Firewall.Menu();
             }
         }
