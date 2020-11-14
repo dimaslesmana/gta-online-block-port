@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace GTA_Online_block_port
 {
     class Program
