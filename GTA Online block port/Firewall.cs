@@ -1,62 +1,47 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NetFwTypeLib;
 
 namespace GTA_Online_block_port
 {
     class Firewall
     {
+        public static string ruleName = "GTA Online block port";
+        public static string port = "6672";
+        public static int protocol = 17;
         private static INetFwPolicy2 firewallPolicy = (INetFwPolicy2)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwPolicy2"));
         private static INetFwRule firewallRule = (INetFwRule)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FWRule"));
 
-        public static bool Menu()
+        public static bool isExists()
         {
-            string fwStatus;
-            string not_fwStatus;
-            string rule_name = "GTAO block port";
-            int protocol = 17;
-            string port = "6672";
-            
-            var rule = firewallPolicy.Rules.OfType<INetFwRule>().Where(n => n.Name == rule_name).FirstOrDefault();
-
-            if (rule == null)
+            if (firewallPolicy.Rules.OfType<INetFwRule>().Where(n => n.Name == ruleName).FirstOrDefault() == null)
             {
-                Console.WriteLine("Rule does not exist! \nPress any key to add firewall rule");
+                Console.Write("Firewall Rule does not exist!\nPress any key to add a new one . . . ");
                 Console.ReadKey();
-                Add(rule_name, protocol, port);
-                return true;
+                addRule();
+
+                return false;
             }
-            else
-            {
-                if (rule.Enabled)
-                {
-                    fwStatus = "Enabled";
-                    not_fwStatus = "disable";
-                }
-                else
-                {
-                    fwStatus = "Disabled";
-                    not_fwStatus = "enable";
-                }
-            }
-            Console.WriteLine(rule_name + " = " + fwStatus);
-            Console.WriteLine("Blocked port = "+ port + " (UDP) (Outbound Rules)\n");
-            Console.WriteLine("Press any key to " + not_fwStatus + " . . .");
-            Console.ReadKey();
-            rule.Enabled = !rule.Enabled;
-            rule = null;
             return true;
         }
 
-        private static void Add(string name, int protocol, string port)
+        public static bool isEnabled()
+        {
+            return firewallPolicy.Rules.OfType<INetFwRule>().Where(n => n.Name == ruleName).FirstOrDefault().Enabled;
+        }
+
+        public static void Toggle()
+        {
+            var rule = firewallPolicy.Rules.OfType<INetFwRule>().Where(n => n.Name == ruleName).FirstOrDefault();
+            rule.Enabled = !rule.Enabled;
+        }
+
+        private static void addRule()
         {
             firewallRule.Enabled = false;
             firewallRule.Action = NET_FW_ACTION_.NET_FW_ACTION_BLOCK;
             firewallRule.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_OUT;
-            firewallRule.Name = name;
+            firewallRule.Name = ruleName;
             firewallRule.Description = "Allowing users to always connect to empty sessions";
             firewallRule.InterfaceTypes = "All";
             firewallRule.Protocol = protocol;
